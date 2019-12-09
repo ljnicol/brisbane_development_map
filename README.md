@@ -6,3 +6,5 @@ For this to work, you will need to source a data file with historical and future
 The columns should have the form: pop_total_yy
 
 The data should be in a geojson in the data directory: pop_hexagons_4326.geojson.
+
+![](brisbane_population_demo.gif)
