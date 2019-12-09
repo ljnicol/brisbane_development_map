@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8' />
+    <title>Extrude polygons for 3D indoor mapping</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.6.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.6.0/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        ;
+    </style>
+</head>
+
+<body>
+    <div id='map'></div>
+    <script>
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: {
+                "version": 8,
+                "sources": {
+                    "raster-tiles": {
+                        "type": "raster",
+                        "tiles": ["https://c.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}.png"],
+                        "tileSize": 256,
+                        "attribution": 'Map tiles by Carto, under CC BY 3.0. Data by OpenStreetMap, under ODbL.'
+                    },
+                    "pop_hexagons": {
+                        "type": "geojson",
+                        "data": "pop_hexagons_4326.geojson"
+                    }
+                },
+                "layers": [{
+                    "id": "simple-tiles",
+                    "type": "raster",
+                    "source": "raster-tiles",
+                    "minzoom": 0,
+                    "maxzoom": 22
+                }, {
+                    "id": "pop_hexagons",
+                    "type": "fill-extrusion",
+                    "source": "pop_hexagons",
+                    "paint": {
+                        "fill-extrusion-color": [
+                            'interpolate',
+                            ['linear'],
+                            ['get', 'pop_total_26'],
+                            0, '#F2F12D',
+                            1, '#EED322',
+                            2, '#E6B71E',
+                            5, '#DA9C20',
+                            10, '#CA8323',
+                            50, '#B86B25',
+                            100, '#A25626',
+                            500, '#A25626',
+                            1000, '#A25626'
+                        ], "fill-extrusion-height": ['get', 'pop_total_26']
+                    }
+                }
+                ]
+            },
+            center: { lng: 153, lat: -27.5 }, // starting position
+            zoom: 8, // starting zoom
+            pitch: 40,
+            bearing: 20,
+            antialias: true
+        });
+    </script>
+
+</body>
+
+</html>
