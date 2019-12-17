@@ -8,3 +8,10 @@ The columns should have the form: pop_total_yy
 The data should be in a geojson in the data directory: pop_hexagons_4326.geojson.
 
 ![](brisbane_population_demo.gif)
+
+## Gettings Started:
+
+```
+pipenv shell
+python server.py
+```
