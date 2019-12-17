@@ -1,4 +1,13 @@
 
+function Get(yourUrl) {
+    var Httpreq = new XMLHttpRequest(); // a new request
+    Httpreq.open("GET", yourUrl, false);
+    Httpreq.send(null);
+    return Httpreq.responseText;
+}
+
+var hex_data = JSON.parse(Get("data/pop_hexagons_4326.geojson"));
+
 var map = new mapboxgl.Map({
     container: 'map',
     style: {
@@ -12,7 +21,8 @@ var map = new mapboxgl.Map({
             },
             "pop_hexagons": {
                 "type": "geojson",
-                "data": "data/pop_hexagons_4326.geojson"
+                "data": hex_data,
+                "generateId": true
             }
         },
         "layers": [{
@@ -26,7 +36,7 @@ var map = new mapboxgl.Map({
             "type": "fill-extrusion",
             "source": "pop_hexagons",
             "paint": {
-                "fill-extrusion-color": fillColour, "fill-extrusion-height": ['get', 'pop_total_26']
+                "fill-extrusion-color": fillColour, "fill-extrusion-height": ['feature-state', 'value'], "fill-extrusion-opacity": 0.8
             }
         }
         ]
@@ -38,15 +48,36 @@ var map = new mapboxgl.Map({
     antialias: true
 });
 
+let updateFeatureState = function (column) {
+    hex_data.features.forEach(function (hex, index) {
+        map.setFeatureState({
+            source: 'pop_hexagons',
+            id: index
+        }, {
+            'value': parseFloat(hex.properties[column])
+        });
+    })
+}
+
 
 let updateMapboxColumn = function (column) {
     let expr = getColourExpression(bins, colours, column);
     map.setPaintProperty('pop_hexagons', 'fill-extrusion-color', expr)
-    map.setPaintProperty('pop_hexagons', 'fill-extrusion-height', ['get', column])
+    map.setPaintProperty('pop_hexagons', 'fill-extrusion-height', ['feature-state', 'value'])
 };
 
 let updateYear = function (value) {
     yearSuffix = value.slice(2, value.length);
     currentColumn = 'pop_total_' + yearSuffix;
-    updateMapboxColumn(currentColumn);
+    updateFeatureState(currentColumn);
 };
+
+map.on('load', function () {
+    updateFeatureState("pop_total_61");
+})
+
+map.on('click', 'pop_hexagons', (e) => {
+    if (e.features.length > 0) {
+        console.log(e.features[0])
+    }
+});

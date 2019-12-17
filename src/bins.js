@@ -26,7 +26,7 @@ let colourSequence = function (numBins) {
 
 let getColourExpression = function (bins, colours, currentColumn) {
     if (bins.length > 0) {
-        let cE = ["interpolate", ["linear"], ["to-number", ["get", currentColumn]]];
+        let cE = ["interpolate", ["linear"], ["feature-state", "value"]];
         bins.map(function (e, i) { return [e, colours[i]] }).map(function (a) {
             cE = cE.concat(a)
         });
@@ -38,5 +38,5 @@ let getColourExpression = function (bins, colours, currentColumn) {
 
 let bins = [0, 1, 5, 10, 50, 100, 500, 1000, 5000, 10000, 50000, 100000];
 let colours = colourSequence(bins.length);
-let fillColour = getColourExpression(bins, colours, 'pop_total_26');
+let fillColour = getColourExpression(bins, colours, 'pop_total_61');
 binsToLegend(bins, colours);
